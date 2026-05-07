@@ -21,7 +21,7 @@ CălinGeorgescu-CanalulOficial,Călin Georgescu - Pacea de la București ( IPJ -
 ```"
 RecorderRomania,"Primarul Negoiță a construit șosele peste magistralele de gaz. „La o explozie, nu mai rămâne nimic!”",Autoritatile abilitate sa intervina!!! De aceea sunt platiti de noi! Multumim recorder!!❤,"```json
 {
-  ""target"": ""Autoritatile"",
+  ""target"": ""Autoritățile"",
   ""stance"": ""against"",
   ""sentiment"": ""angry"",
   ""tone"": ""aggressive"",
@@ -31,7 +31,7 @@ RecorderRomania,"Primarul Negoiță a construit șosele peste magistralele de ga
 ```"
 RecorderRomania,"Primarul Negoiță a construit șosele peste magistralele de gaz. „La o explozie, nu mai rămâne nimic!”",In acest moment mai putem spune doar Dumnezeu sa ii apere pe cei care stau acolo sau trec pe acolo cu masina 😩,"```json
 {
-  ""target"": ""unknown"",
+  ""target"": ""Persoanele care se află sau trec prin zona respectivă"",
   ""stance"": ""neutral"",
   ""sentiment"": ""frustrated"",
   ""tone"": ""fatalist"",
@@ -41,10 +41,10 @@ RecorderRomania,"Primarul Negoiță a construit șosele peste magistralele de ga
 ```"
 RecorderRomania,DOCUMENTAR RECORDER. Singuri,"E dureros.. e crunt.. simt vinovatie si recunostinta in acelasi timp pentru ca mie nu mi-a lipsit dragostea mamei si caldura familiei. Imi pare atat de rau ca nu toti au avut parte de asta ....cel mai tare doare ca ei traiesc cu traumele astea toata viata. Trecem pe langa oameni pe strada si in ignoranta noastra poate judecam cu superficialitate un gest, un cuvant urat pe care il auzim, dar nici prin minte nu ne trece ca omul acela altceva nu a vazut, nu a auzit.. sunt ingrozita de acest sistem bolnav care nu face nimic bun.. ""protectia copilului"".... ce-o mai fi si aia...Multumim, Recorder pentru ca ne puneti fata in fata cu o realitate de care nu suntem constienti!","```json
 {
-  ""target"": ""Sistemul de protecție a copilului"",
+  ""target"": ""Sistemul de protecție a copilului, societatea"",
   ""stance"": ""against"",
   ""sentiment"": ""negative"",
-  ""tone"": ""urgent"",
+  ""tone"": ""sad"",
   ""topic"": ""social rights"",
   ""interpretation_problem"": ""none""
 }
@@ -65,13 +65,13 @@ turcescu111,"Frică, foame, sărăcie ","Totul duce către: Noua Ordine Mondial�
   ""stance"": ""against"",
   ""sentiment"": ""angry"",
   ""tone"": ""aggressive"",
-  ""topic"": ""social rights"",
+  ""topic"": ""security"",
   ""interpretation_problem"": ""none""
 }
 ```"
 RecorderRomania,"Primarul Negoiță a construit șosele peste magistralele de gaz. „La o explozie, nu mai rămâne nimic!”","Un hot corupt arogant si nesimtit, caruia nimeni nu-i face nimic! 😡 Este ingrozitor!","```json
 {
-  ""target"": ""Un hot corupt"",
+  ""target"": ""Un politician corupt"",
   ""stance"": ""against"",
   ""sentiment"": ""angry"",
   ""tone"": ""aggressive"",
