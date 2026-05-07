@@ -1,0 +1,8 @@
+{
+  "timestamp": "2026-05-07T22:48:41.647896",
+  "model": "gemini-2.5-flash",
+  "temperature": 0.2,
+  "max_tokens": 120,
+  "task": "student_neutral_summary",
+  "input_text": "\nRezuma textul de mai jos în maximum 60 de cuvinte.\nRezumatul trebuie să fie neutru, clar și factual.\nNu adăuga informații care nu apar în text.\n\nTEXT:\n\nTODO: Lipiți aici un text scurt dintr-o sursă publică.\n\n",
+  "output_text": 
