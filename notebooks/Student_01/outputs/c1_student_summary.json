@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-05-09T13:18:46.912736",
+  "model": "gemini-2.5-flash",
+  "temperature": 0.2,
+  "max_tokens": 120,
+  "task": "student_neutral_summary",
+  "input_text": "\nAt its core, AI is about data. It is a set of technologies that enable computers to do complex tasks faster than humans. AI systems, such as machine learning models, learn to perform these tasks from the data they are trained on. When these models rely on biased algorithms, they can reinforce existing inequalities and fuel gender discrimination in AI. \n\nImagine, training a machine to make hiring decisions by showing it examples from the past. If most of those examples carry conscious or unconscious bias – for example, showing men as scientists and women as nurses – the AI may interpret that men and women are better suited for certain roles and make biased decisions when filtering applications.\n\nThis is called AI gender bias— when the AI treats people differently on the basis of their gender, because that’s what it learned from the biased data it was trained on.\n",
+  "output_text": "Inteligența artificială"
+}
