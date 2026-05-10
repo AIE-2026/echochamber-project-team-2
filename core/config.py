@@ -6,9 +6,18 @@
 # Students: you don't need to modify this file.
 # If you want to add a new LLM provider, add it to AVAILABLE_MODELS below.
 
-MAIN_MODEL = "gemini-2.0-flash"
+PROVIDER_PRINCIPAL = "gemini"
 
-FALLBACK_MODEL = "openai/gpt-3.5-turbo"
+MODEL_PRINCIPAL = "gemini-2.5-flash-lite"
+
+PROVIDER_FALLBACK = "openrouter"
+
+MODEL_FALLBACK = "openai/gpt-3.5-turbo"
+
+TEMPERATURE = 0.2
+
+
+# API endpoints
 
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 

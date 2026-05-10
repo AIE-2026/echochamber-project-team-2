@@ -23,21 +23,25 @@ Structure:
 # 1. IMPORTS & SETUP
 # ─────────────────────────────────────────────────────────────────────────────
 import os
+
 from dotenv import load_dotenv
 from openai import OpenAI
 
-# import config
+# import configuration
 from core.config import (
-    MAIN_MODEL,
-    FALLBACK_MODEL,
+    PROVIDER_PRINCIPAL,
+    MODEL_PRINCIPAL,
+    PROVIDER_FALLBACK,
+    MODEL_FALLBACK,
+    TEMPERATURE,
     GEMINI_BASE_URL,
     OPENROUTER_BASE_URL
 )
 
-# load .env
+# load local environment variables
 load_dotenv()
 
-# API keys
+# API keys from .env
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
@@ -54,13 +58,27 @@ openrouter_client = OpenAI(
 )
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# 2. SIMPLE MODEL ROUTER
+# ─────────────────────────────────────────────────────────────────────────────
+
 def ask_model(prompt):
+    """
+    Sends a prompt to the main model.
+    If the main model fails, tries the fallback model.
+    """
 
     try:
-        print(f"\nUsing MAIN model: {MAIN_MODEL}")
+
+        print("\n" + "=" * 60)
+        print(f"Using MAIN provider: {PROVIDER_PRINCIPAL}")
+        print(f"Using MAIN model: {MODEL_PRINCIPAL}")
+        print(f"Temperature: {TEMPERATURE}")
+        print("=" * 60)
 
         response = gemini_client.chat.completions.create(
-            model=MAIN_MODEL,
+            model=MODEL_PRINCIPAL,
+            temperature=TEMPERATURE,
             messages=[
                 {
                     "role": "user",
@@ -71,17 +89,24 @@ def ask_model(prompt):
 
         return response.choices[0].message.content
 
-    except Exception as e:
+    except Exception as main_error:
 
         print("\nMain model failed.")
-        print(e)
+        print(main_error)
 
-        print(f"\nUsing FALLBACK model: {FALLBACK_MODEL}")
+        print("\nTrying fallback model...")
 
         try:
 
+            print("\n" + "=" * 60)
+            print(f"Using FALLBACK provider: {PROVIDER_FALLBACK}")
+            print(f"Using FALLBACK model: {MODEL_FALLBACK}")
+            print(f"Temperature: {TEMPERATURE}")
+            print("=" * 60)
+
             response = openrouter_client.chat.completions.create(
-                model=FALLBACK_MODEL,
+                model=MODEL_FALLBACK,
+                temperature=TEMPERATURE,
                 messages=[
                     {
                         "role": "user",
@@ -94,10 +119,17 @@ def ask_model(prompt):
 
         except Exception as fallback_error:
 
-            return f"Fallback also failed: {fallback_error}"
+            return f"\nFallback model also failed:\n{fallback_error}"
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 3. TERMINAL TEST APP
+# ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
+
+    print("\nEchoChamber Studio — Minimal App")
+    print("-" * 40)
 
     user_prompt = input("\nWrite your prompt:\n> ")
 
