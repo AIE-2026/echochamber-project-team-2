@@ -1,3 +1,4 @@
+# Import libraries for environment loading, YAML roles, LLM access and retrieval
 from pathlib import Path
 import argparse
 import os
@@ -9,9 +10,13 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from core.retriever import Retriever
 
 
- # exemplu  python -m core.agent --agent anti_sistem --text "CCR a decis anularea alegerilor după suspiciuni privind influențe externe." --provider gemini --k 5
+# Example terminal command for testing the agent pipeline
+# python -m core.agent --agent anti_sistem --text "CCR a decis anularea alegerilor după suspiciuni privind influențe externe." --provider gemini --k 5
+
 load_dotenv()
 
+
+# Define supported LLM providers and API configuration
 MODELS = {
     "gemini": {
         "model": os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite"),
@@ -26,6 +31,7 @@ MODELS = {
 }
 
 
+# Load one agent role configuration from YAML
 def load_role(agent_slug, roles_path="assets/roles/roles.yaml"):
     path = Path(roles_path)
 
@@ -40,6 +46,7 @@ def load_role(agent_slug, roles_path="assets/roles/roles.yaml"):
     return roles[agent_slug]
 
 
+# Create the LLM client for the selected provider
 def make_llm(provider="gemini", temperature=0.3):
     config = MODELS[provider]
 
@@ -54,6 +61,7 @@ def make_llm(provider="gemini", temperature=0.3):
     )
 
 
+# Build the final RAG prompt using stimulus and retrieved context
 def build_prompt(stimulus, rag_text):
     return f"""
 [STIMULUS]
@@ -64,6 +72,7 @@ def build_prompt(stimulus, rag_text):
 """.strip()
 
 
+# Retrieve similar comments and generate one agent response
 def generate_agent_response(
     agent_slug,
     stimulus,
@@ -73,22 +82,32 @@ def generate_agent_response(
     roles_path="assets/roles/roles.yaml",
 ):
     role = load_role(agent_slug, roles_path)
+
+    # Initialize semantic retriever for the selected agent
     retriever = Retriever(agent_slug)
 
+    # Retrieve top-k similar fragments from the vector store
     chunks = retriever.search(stimulus, k=k)
+
+    # Format retrieved fragments as prompt context
     rag_text = retriever.format_for_prompt(chunks)
 
+    # Build the final prompt for the LLM
     prompt = build_prompt(stimulus, rag_text)
 
+    # Initialize the selected LLM provider
     llm = make_llm(provider, temperature)
 
+    # Create LangChain message structure
     messages = [
         SystemMessage(content=role["system"]),
         HumanMessage(content=prompt),
     ]
 
+    # Send prompt to the LLM and generate response
     response = llm.invoke(messages)
 
+    # Return full response payload and retrieved context
     return {
         "agent_slug": agent_slug,
         "agent_name": role.get("name", agent_slug),
@@ -104,6 +123,7 @@ def generate_agent_response(
     }
 
 
+# Terminal test interface for the agent pipeline
 def main():
     parser = argparse.ArgumentParser()
 
@@ -125,6 +145,7 @@ def main():
         roles_path=args.roles,
     )
 
+    # Print agent information and generated response
     print("\n=== AGENT ===")
     print(result["agent_name"])
 
