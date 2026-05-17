@@ -48,13 +48,14 @@ from tqdm import tqdm
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 
-DEFAULT_PROMPT = "prompts/annotation_prompt.md"
+DEFAULT_PROMPT = "prompts/team_annotation_prompt.md"
 
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEEPSEEK_MODEL = "deepseek-chat"
 
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 GEMINI_MODEL = "gemini-2.5-flash-lite"
+
 
 MAX_RETRIES = 3
 SLEEP_BETWEEN_CALLS = 0.5
@@ -63,8 +64,8 @@ SLEEP_BETWEEN_CALLS = 0.5
 TARGET_VOCAB = {
     "georgescu", "simion", "aur", "sosoaca",
     "psd", "pnl", "usr", "nicusor_dan", "bolojan", "other_mainstream_actor",
-    "guvern", "presedintie", "parlament", "ccr", "alegeri", "justitie", "other_state_institution",
-    "ue", "nato", "bruxelles", "other_external_actor",
+    "guvern", "presedintie", "parlament", "ccr", "alegeri", "justitie","sistem",
+    "elite","other_state_institution","ue", "nato", "bruxelles", "other_external_actor",
     "recorder", "g4media", "digi24", "presa_mainstream", "presa_investigativa", "other_media",
     "none",
 }
