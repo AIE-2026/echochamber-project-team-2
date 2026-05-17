@@ -25,6 +25,7 @@ sys.path.append(str(PROJECT_ROOT))
 
 from core.agent import generate_agent_response
 
+
 # import configuration
 from core.config import (
     PROVIDER_PRINCIPAL,
@@ -35,6 +36,10 @@ from core.config import (
     GEMINI_BASE_URL,
     OPENROUTER_BASE_URL
 )
+
+from core.graph import run_thread
+import html
+
 
 # load local environment variables
 load_dotenv()
@@ -169,6 +174,84 @@ def rag_agent_response(agent_slug, stimulus, provider, k):
         return f"[Eroare Agent RAG: {type(e).__name__} — {e}]", ""
 
 
+#add display function
+
+def render_thread_html(messages):
+    cards = []
+
+    for msg in messages:
+        agent = html.escape(str(msg.get("agent", "")))
+        handle = html.escape(str(msg.get("handle", msg.get("slug", ""))))
+        text = html.escape(str(msg.get("text", "")))
+        turn = msg.get("turn", "")
+
+        cards.append(f"""
+        <div style='
+            border-left:3px solid #e05a35;
+            padding:.7rem 1rem;
+            margin:.5rem 0;
+            background:#16161a;
+            border-radius:8px;
+        '>
+            <div style='
+                font-size:.75rem;
+                color:#e05a35;
+                text-transform:uppercase;
+                font-weight:600;
+            '>
+                {agent}
+            </div>
+
+            <div style='
+                font-size:.7rem;
+                color:#888;
+                margin-bottom:.35rem;
+            '>
+                {handle} · Turn {turn}
+            </div>
+
+            <div style='
+                color:#c0bcb6;
+                line-height:1.5;
+            '>
+                {text}
+            </div>
+        </div>
+        """)
+
+    return "\n".join(cards)
+
+# add function that runs the graph
+
+def run_multi_agent_thread(stimulus, provider, total_turns, use_anti_populist, use_conspirationist, use_personalist_salvator):
+    active_slugs = []
+
+    if use_anti_populist:
+        active_slugs.append("anti_populist")
+    if use_conspirationist:
+        active_slugs.append("conspirationist")
+    if use_personalist_salvator:
+        active_slugs.append("personalist_salvator")
+
+    if not stimulus.strip():
+        return "Scrie un text politic mai întâi."
+
+    if not active_slugs:
+        return "Selectează cel puțin un agent."
+
+    try:
+        messages = run_thread(
+            stimulus=stimulus,
+            active_slugs=active_slugs,
+            total_turns=int(total_turns),
+            provider=provider,
+            k=3,
+        )
+        return render_thread_html(messages)
+
+    except Exception as e:
+        return f"[Eroare Multi-agent Thread: {type(e).__name__} — {e}]"
+    
 # ─────────────────────────────────────────────────────────────────────────────
 # 6. BUILD UI
 # ─────────────────────────────────────────────────────────────────────────────
@@ -263,6 +346,42 @@ with gr.Blocks(title="EchoChamber") as demo:
             ]
         )
 
+#add new multi-agent tab
+
+    with gr.Tab("Multi-agent thread"):
+        thread_stimulus = gr.Textbox(
+        label="Text politic",
+        value="România are nevoie de un lider puternic care să nu mai asculte de Bruxelles.",
+        lines=4
+    )
+
+    thread_provider = gr.Dropdown(
+        choices=["gemini", "deepseek"],
+        value="deepseek",
+        label="Provider"
+    )
+
+    thread_turns = gr.Slider(
+        minimum=2,
+        maximum=8,
+        value=4,
+        step=1,
+        label="Număr intervenții"
+    )
+
+    use_anti_populist = gr.Checkbox(value=True, label="Anti-populist")
+    use_conspirationist = gr.Checkbox(value=True, label="Conspiraționist")
+    use_personalist_salvator = gr.Checkbox(value=True, label="Personalist-salvator")
+
+    thread_button = gr.Button("Pornește thread")
+    thread_output = gr.HTML(label="Thread generat")
+
+    thread_button.click(
+        fn=run_multi_agent_thread,
+        inputs=[thread_stimulus, thread_provider, thread_turns, use_anti_populist, use_conspirationist, use_personalist_salvator],
+        outputs=thread_output
+    )
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 7. LAUNCH
@@ -270,3 +389,9 @@ with gr.Blocks(title="EchoChamber") as demo:
 
 if __name__ == "__main__":
     demo.launch()
+
+
+
+
+
+    
