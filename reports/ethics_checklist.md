@@ -30,7 +30,7 @@ All outputs must be interpreted critically by students, researchers, or instruct
 
 ## 3. Main risks
 | Risk | What it means | Minimum control |
-|---|---|---|
+|---|---|---| n
 | Anthropomorphism | Users may treat agents as real people | Always label them as simulated agents |
 | False factuality | Generated text may sound like verified information | Separate retrieved context from generated response |
 | Corpus bias | The corpus may contain biased, hostile, repetitive, or unbalanced content | Document corpus source and known limits |

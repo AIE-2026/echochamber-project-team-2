@@ -49,3 +49,6 @@ cp .env.example .env        # then add your API key
   - Member 3 → Agent:
   - Member 4 → Agent:
   - Member 5 → Agent:
+
+
+## Ethics 
