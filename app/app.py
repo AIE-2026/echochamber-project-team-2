@@ -190,7 +190,7 @@ def render_thread_html(messages):
             border-left:3px solid #e05a35;
             padding:.7rem 1rem;
             margin:.5rem 0;
-            background:#16161a;
+            background:#E7DECD;
             border-radius:8px;
         '>
             <div style='
@@ -211,7 +211,7 @@ def render_thread_html(messages):
             </div>
 
             <div style='
-                color:#c0bcb6;
+                color:#E7DECD;
                 line-height:1.5;
             '>
                 {text}
