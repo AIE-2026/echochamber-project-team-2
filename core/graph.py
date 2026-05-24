@@ -28,9 +28,11 @@ from core.agent import generate_agent_response
 # Handles folosite pentru afișarea thread-ului.
 # Puteți păstra aceste valori sau le puteți adapta la agenții echipei.
 HANDLES = {
-    "conspirationist": "@AdevarulViu",
-    "anti_populist": "@RomaniaLucida",
-    "personalist_salvator": "@Marian_GS_Fan"
+    "anti_sistem": "@ImpotrivaSistemului",
+    "conspirationist": "Conspiraționist",
+    "anti-populist": "Anti-populist",
+    "pro_european": "Pro-european",
+    "personalist_salvator": "Personalist-salvator",
 }
 
 
