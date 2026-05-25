@@ -409,10 +409,10 @@ with gr.Blocks(title="EchoChamber Studio", theme=gr.themes.Soft()) as demo:
 
         # Get agent display names with emoji from YAML
         anti_sistem_label = f"{agent_info.get('anti_sistem', {}).get('emoji', '')} Anti-sistem ({agent_info.get('anti_sistem', {}).get('name', '@ImpotrivaSistemului')})"
-        conspirationist_label = f"{agent_info.get('conspirationist', {}).get('emoji', '')} Conspiraționist ({agent_info.get('conspirationist', {}).get('name', 'Conspiraționist')})"
-        personalist_label = f"{agent_info.get('personalist_salvator', {}).get('emoji', '')} Personalist-salvator ({agent_info.get('personalist_salvator', {}).get('name', 'Personalist-salvator')})"
+        conspirationist_label = f"{agent_info.get('conspirationist', {}).get('emoji', '')} Conspiraționist ({agent_info.get('conspirationist', {}).get('name', '@AdevarulAscuns')})"
+        personalist_label = f"{agent_info.get('personalist_salvator', {}).get('emoji', '')} Personalist-salvator ({agent_info.get('personalist_salvator', {}).get('name', '@SalvatorulDeServiciu')})"
         pro_european_label = f"{agent_info.get('pro_european', {}).get('emoji', '')} Pro-european ({agent_info.get('pro_european', {}).get('name', 'Pro-european')})"
-        anti_populist_label = f"{agent_info.get('anti_populist', {}).get('emoji', '')} Anti-populist ({agent_info.get('anti_populist', {}).get('name', 'Anti-populist')})"
+        anti_populist_label = f"{agent_info.get('anti_populist', {}).get('emoji', '')} Anti-populist ({agent_info.get('anti_populist', {}).get('name', '@StopPopulism')})"
 
         use_anti_sistem = gr.Checkbox(value=True, label=anti_sistem_label)
         use_conspirationist = gr.Checkbox(value=True, label=conspirationist_label)

@@ -29,10 +29,9 @@ from core.agent import generate_agent_response
 # Puteți păstra aceste valori sau le puteți adapta la agenții echipei.
 HANDLES = {
     "anti_sistem": "@ImpotrivaSistemului",
-    "conspirationist": "Conspiraționist",
-    "anti-populist": "Anti-populist",
-    "pro_european": "Pro-european",
-    "personalist_salvator": "Personalist-salvator",
+    "conspirationist": "@AdevarulAscuns",
+    "anti_populist": "@StopPopulism",
+    "personalist_salvator": "@SalvatorulDeServiciu"
 }
 
 

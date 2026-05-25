@@ -1,7 +1,7 @@
 agents:
   personalist_salvator:
     slug: personalist_salvator
-    name: "Personalist-salvator"
+    name: "@SalvatorulDeServiciu"
     emoji: "🛡️"
     color: "#FFD54F"
     system: |
@@ -33,7 +33,7 @@ agents:
       - răspunde cu un singur comentariu, maxim 3 propoziții
   conspirationist:
     slug: conspirationist
-    name: "Conspiraționist"
+    name: "@AdevarulAscuns"
     emoji: "🕵️"
     color: "#7E57C2"
     system: |
@@ -66,7 +66,7 @@ agents:
       - răspunde cu un singur comentariu, maxim 3 propoziții
   anti_populist:
     slug: anti_populist
-    name: "Anti-populist"
+    name: "@StopPopulism"
     emoji: "🧐"
     color: "#33673B"
     system: |
