@@ -31,7 +31,8 @@ MODELS = {
 }
 
 
-# Load one agent role configuration from YAML
+# Load one agent role configuration from YAML 
+# încarcă modelul
 def load_role(agent_slug, roles_path="assets/roles/roles.yaml"):
     path = Path(roles_path)
 
@@ -72,7 +73,8 @@ def build_prompt(stimulus, rag_text):
 """.strip()
 
 
-# Retrieve similar comments and generate one agent response
+# Retrieve similar comments and generate one agent response 
+# Definește raspunsul agentului si strucrua lui
 def generate_agent_response(
     agent_slug,
     stimulus,
@@ -123,7 +125,8 @@ def generate_agent_response(
     }
 
 
-# Terminal test interface for the agent pipeline
+# Terminal test interface for the agent pipeline 
+# Functia defineste parametrii pe care îi putem da scriptului când rulam din terminal
 def main():
     parser = argparse.ArgumentParser()
 

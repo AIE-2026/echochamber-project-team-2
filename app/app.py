@@ -5,6 +5,7 @@ EchoChamber Studio — app.py
 Minimal app with:
 1. Simple chat tab
 2. Agent RAG tab
+3. Multi-agent thread tab
 """
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -25,7 +26,6 @@ sys.path.append(str(PROJECT_ROOT))
 
 from core.agent import generate_agent_response
 
-
 # import configuration
 from core.config import (
     PROVIDER_PRINCIPAL,
@@ -39,7 +39,6 @@ from core.config import (
 
 from core.graph import run_thread
 import html
-
 
 # load local environment variables
 load_dotenv()
@@ -62,7 +61,6 @@ openrouter_client = OpenAI(
     base_url=OPENROUTER_BASE_URL
 )
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 # 2. SIMPLE MODEL ROUTER
 # ─────────────────────────────────────────────────────────────────────────────
@@ -74,7 +72,6 @@ def ask_model(prompt):
     """
 
     try:
-
         response = gemini_client.chat.completions.create(
             model=MODEL_PRINCIPAL,
             temperature=TEMPERATURE,
@@ -85,16 +82,13 @@ def ask_model(prompt):
                 }
             ]
         )
-
         return response.choices[0].message.content
 
     except Exception as main_error:
-
         print("\nMain model failed.")
         print(main_error)
 
         try:
-
             response = openrouter_client.chat.completions.create(
                 model=MODEL_FALLBACK,
                 temperature=TEMPERATURE,
@@ -105,32 +99,25 @@ def ask_model(prompt):
                     }
                 ]
             )
-
             return response.choices[0].message.content
 
         except Exception as fallback_error:
-
             return f"\nFallback model also failed:\n{fallback_error}"
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 3. SIMPLE CHAT FUNCTION
 # ─────────────────────────────────────────────────────────────────────────────
 
 def chat(prompt):
-
     if not prompt.strip():
         return "Scrie un prompt."
-
     return ask_model(prompt)
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 4. LOAD AVAILABLE AGENTS
 # ─────────────────────────────────────────────────────────────────────────────
 
 def load_agent_choices():
-
     roles_path = PROJECT_ROOT / "assets" / "roles" / "roles.yaml"
 
     if not roles_path.exists():
@@ -140,16 +127,26 @@ def load_agent_choices():
         data = yaml.safe_load(f)
 
     roles = data["agents"] if "agents" in data else data
-
     return list(roles.keys())
 
+def load_agent_info():
+    """Load full agent information from roles.yaml"""
+    roles_path = PROJECT_ROOT / "assets" / "roles" / "roles.yaml"
+
+    if not roles_path.exists():
+        return {}
+
+    with open(roles_path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+
+    roles = data["agents"] if "agents" in data else data
+    return roles
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 5. RAG AGENT FUNCTION
 # ─────────────────────────────────────────────────────────────────────────────
 
 def rag_agent_response(agent_slug, stimulus, provider, k):
-
     if not agent_slug:
         return "Nu există agenți în assets/roles/roles.yaml.", ""
 
@@ -157,7 +154,6 @@ def rag_agent_response(agent_slug, stimulus, provider, k):
         return "Scrie un text politic pentru agent.", ""
 
     try:
-
         result = generate_agent_response(
             agent_slug=agent_slug,
             stimulus=stimulus,
@@ -166,42 +162,48 @@ def rag_agent_response(agent_slug, stimulus, provider, k):
             temperature=0.3,
             roles_path="assets/roles/roles.yaml",
         )
-
         return result["response"], result["rag_text"]
 
     except Exception as e:
-
         return f"[Eroare Agent RAG: {type(e).__name__} — {e}]", ""
 
+# ─────────────────────────────────────────────────────────────────────────────
+# 6. DISPLAY FUNCTION
+# ─────────────────────────────────────────────────────────────────────────────
 
-#add display function
-
-def render_thread_html(messages):
+def render_thread_html(messages, agent_info):
     cards = []
 
     for msg in messages:
         agent = html.escape(str(msg.get("agent", "")))
+        slug = str(msg.get("slug", ""))
         handle = html.escape(str(msg.get("handle", msg.get("slug", ""))))
         text = html.escape(str(msg.get("text", "")))
         turn = msg.get("turn", "")
 
+        # Get agent color and emoji from agent_info if available
+        color = "#e05a35"
+        emoji = ""
+        if slug in agent_info:
+            color = agent_info[slug].get("color", "#e05a35")
+            emoji = agent_info[slug].get("emoji", "")
+
         cards.append(f"""
         <div style='
-            border-left:3px solid #e05a35;
+            border-left:3px solid {color};
             padding:.7rem 1rem;
             margin:.5rem 0;
-            background:#16161a;
+            background:#f5f0e8;
             border-radius:8px;
         '>
             <div style='
                 font-size:.75rem;
-                color:#e05a35;
+                color:{color};
                 text-transform:uppercase;
                 font-weight:600;
             '>
-                {agent}
+                {emoji} {agent}
             </div>
-
             <div style='
                 font-size:.7rem;
                 color:#888;
@@ -209,9 +211,8 @@ def render_thread_html(messages):
             '>
                 {handle} · Turn {turn}
             </div>
-
             <div style='
-                color:#c0bcb6;
+                color:#333;
                 line-height:1.5;
             '>
                 {text}
@@ -221,17 +222,27 @@ def render_thread_html(messages):
 
     return "\n".join(cards)
 
-# add function that runs the graph
+# ─────────────────────────────────────────────────────────────────────────────
+# 7. RUN MULTI-AGENT THREAD
+# ─────────────────────────────────────────────────────────────────────────────
 
-def run_multi_agent_thread(stimulus, provider, total_turns, use_anti_populist, use_conspirationist, use_personalist_salvator):
+def run_multi_agent_thread(stimulus, provider, total_turns, 
+                           use_anti_sistem, use_conspirationist, 
+                           use_personalist_salvator, use_pro_european, 
+                           use_anti_populist):
+    
     active_slugs = []
 
-    if use_anti_populist:
-        active_slugs.append("anti_populist")
+    if use_anti_sistem:
+        active_slugs.append("anti_sistem")
     if use_conspirationist:
         active_slugs.append("conspirationist")
     if use_personalist_salvator:
         active_slugs.append("personalist_salvator")
+    if use_pro_european:
+        active_slugs.append("pro_european")
+    if use_anti_populist:
+        active_slugs.append("anti_populist")
 
     if not stimulus.strip():
         return "Scrie un text politic mai întâi."
@@ -247,21 +258,37 @@ def run_multi_agent_thread(stimulus, provider, total_turns, use_anti_populist, u
             provider=provider,
             k=3,
         )
-        return render_thread_html(messages)
+        agent_info = load_agent_info()
+        return render_thread_html(messages, agent_info)
 
     except Exception as e:
         return f"[Eroare Multi-agent Thread: {type(e).__name__} — {e}]"
-    
+
 # ─────────────────────────────────────────────────────────────────────────────
-# 6. BUILD UI
+# 8. BUILD UI
 # ─────────────────────────────────────────────────────────────────────────────
 
 agent_choices = load_agent_choices()
+agent_info = load_agent_info()
 
-with gr.Blocks(title="EchoChamber") as demo:
+# Create agent labels with emoji for dropdown
+agent_labels = []
+for slug in agent_choices:
+    if slug in agent_info:
+        emoji = agent_info[slug].get("emoji", "")
+        name = agent_info[slug].get("name", slug)
+        agent_labels.append(f"{emoji} {name}")
+    else:
+        agent_labels.append(slug)
 
-    gr.Markdown("# EchoChamber")
-    gr.Markdown("Aplicație minimă pentru testarea modelelor și a agenților RAG.")
+with gr.Blocks(title="EchoChamber Studio", theme=gr.themes.Soft()) as demo:
+
+    gr.Markdown("""
+    # EchoChamber Studio
+    **Simulare a bulelor discursive folosind comentarii politice**
+    
+    *Aplicație prototip cu scopuri educationale si de cercetare. Agenții sunt roluri simulate, nu persoane reale.*
+    """)
 
     # ─────────────────────────────────────────────────────────────────────
     # TAB 1 — SIMPLE CHAT
@@ -297,7 +324,7 @@ with gr.Blocks(title="EchoChamber") as demo:
         agent_dropdown = gr.Dropdown(
             choices=agent_choices,
             value=agent_choices[0] if agent_choices else None,
-            label="Agent"
+            label="Selectează agentul"
         )
 
         provider_dropdown = gr.Dropdown(
@@ -307,7 +334,7 @@ with gr.Blocks(title="EchoChamber") as demo:
         )
 
         stimulus_box = gr.Textbox(
-            label="Text politic nou",
+            label="Text politic (știre sau comentariu)",
             value="CCR a decis anularea alegerilor după suspiciuni privind influențe externe.",
             lines=4
         )
@@ -317,7 +344,7 @@ with gr.Blocks(title="EchoChamber") as demo:
             maximum=10,
             value=5,
             step=1,
-            label="Număr fragmente recuperate"
+            label="Număr fragmente recuperate (k)"
         )
 
         agent_button = gr.Button("Generează răspuns RAG")
@@ -328,7 +355,7 @@ with gr.Blocks(title="EchoChamber") as demo:
         )
 
         context_box = gr.Textbox(
-            label="Context recuperat",
+            label="Context recuperat din bula discursivă",
             lines=12
         )
 
@@ -346,52 +373,88 @@ with gr.Blocks(title="EchoChamber") as demo:
             ]
         )
 
-#add new multi-agent tab
+    # ─────────────────────────────────────────────────────────────────────
+    # TAB 3 — MULTI-AGENT THREAD
+    # ─────────────────────────────────────────────────────────────────────
 
-    with gr.Tab("Multi-agent thread"):
+    with gr.Tab("Dezbatere multi-agent"):
+
+        gr.Markdown("""
+        ### Simulează o conversație între mai mulți agenți discursivi
+        
+        Selectează agenții care vor participa la dezbatere și vezi cum reacționează fiecare la același text politic.
+        """)
+
         thread_stimulus = gr.Textbox(
-        label="Text politic",
-        value="România are nevoie de un lider puternic care să nu mai asculte de Bruxelles.",
-        lines=4
-    )
+            label="Text politic",
+            value="România are nevoie de un lider puternic care să nu mai asculte de Bruxelles.",
+            lines=4
+        )
 
-    thread_provider = gr.Dropdown(
-        choices=["gemini", "deepseek"],
-        value="deepseek",
-        label="Provider"
-    )
+        thread_provider = gr.Dropdown(
+            choices=["gemini", "deepseek"],
+            value="deepseek",
+            label="Provider"
+        )
 
-    thread_turns = gr.Slider(
-        minimum=2,
-        maximum=8,
-        value=4,
-        step=1,
-        label="Număr intervenții"
-    )
+        thread_turns = gr.Slider(
+            minimum=2,
+            maximum=8,
+            value=4,
+            step=1,
+            label="Număr total de intervenții"
+        )
 
-    use_anti_populist = gr.Checkbox(value=True, label="Anti-populist")
-    use_conspirationist = gr.Checkbox(value=True, label="Conspiraționist")
-    use_personalist_salvator = gr.Checkbox(value=True, label="Personalist-salvator")
+        gr.Markdown("### Selectează agenții participanți")
 
-    thread_button = gr.Button("Pornește thread")
-    thread_output = gr.HTML(label="Thread generat")
+        # Get agent display names with emoji from YAML
+        anti_sistem_label = f"{agent_info.get('anti_sistem', {}).get('emoji', '')} Anti-sistem ({agent_info.get('anti_sistem', {}).get('name', '@ImpotrivaSistemului')})"
+        conspirationist_label = f"{agent_info.get('conspirationist', {}).get('emoji', '')} Conspiraționist ({agent_info.get('conspirationist', {}).get('name', 'Conspiraționist')})"
+        personalist_label = f"{agent_info.get('personalist_salvator', {}).get('emoji', '')} Personalist-salvator ({agent_info.get('personalist_salvator', {}).get('name', 'Personalist-salvator')})"
+        pro_european_label = f"{agent_info.get('pro_european', {}).get('emoji', '')} Pro-european ({agent_info.get('pro_european', {}).get('name', 'Pro-european')})"
+        anti_populist_label = f"{agent_info.get('anti_populist', {}).get('emoji', '')} Anti-populist ({agent_info.get('anti_populist', {}).get('name', 'Anti-populist')})"
 
-    thread_button.click(
-        fn=run_multi_agent_thread,
-        inputs=[thread_stimulus, thread_provider, thread_turns, use_anti_populist, use_conspirationist, use_personalist_salvator],
-        outputs=thread_output
-    )
+        use_anti_sistem = gr.Checkbox(value=True, label=anti_sistem_label)
+        use_conspirationist = gr.Checkbox(value=True, label=conspirationist_label)
+        use_personalist_salvator = gr.Checkbox(value=True, label=personalist_label)
+        use_pro_european = gr.Checkbox(value=True, label=pro_european_label)
+        use_anti_populist = gr.Checkbox(value=True, label=anti_populist_label)
 
+        thread_button = gr.Button("Pornește dezbaterea", variant="primary")
+        thread_output = gr.HTML(label="Conversație generată")
+
+        thread_button.click(
+            fn=run_multi_agent_thread,
+            inputs=[
+                thread_stimulus, 
+                thread_provider, 
+                thread_turns, 
+                use_anti_sistem, 
+                use_conspirationist, 
+                use_personalist_salvator,
+                use_pro_european,
+                use_anti_populist
+            ],
+            outputs=thread_output
+        )
+
+    # ─────────────────────────────────────────────────────────────────────
+    # FOOTER with disclaimer
+    # ─────────────────────────────────────────────────────────────────────
+
+    gr.Markdown("""
+    ---
+    **Ethics & limitations**
+    
+    EchoChamber este un prototip experimental-educațional și de cercetare. Agenții sunt roluri discursive simulate, 
+    **nu** persoane reale sau reprezentanți ai unor grupuri sociale reale. Răspunsurile generate pot conține 
+    părtinire, exagerări sau afirmații incorecte și trebuie interpretate ca atare.
+
+    """)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# 7. LAUNCH
+# 9. LAUNCH
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    demo.launch()
-
-
-
-
-
-    
+    demo.launch(share=False)

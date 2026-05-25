@@ -20,14 +20,13 @@ from langgraph.graph import StateGraph, START, END
 from core.agent import generate_agent_response
 
 
-# Handles folosite pentru afișarea thread-ului.
-# Puteți păstra aceste valori sau le puteți adapta la agenții echipei.
+# Handles actualizate
 HANDLES = {
-    "anti_sistem": "@LibertateRO99",
-    "conspirationist": "@AdevarulViu",
-    "pro_european": "@EuroOptimistRO",
-    "anti_suveranist": "@CetateanEU",
-    "personalist_salvator": "@Marian_GS_Fan",
+    "anti_sistem": "@ImpotrivaSistemului",
+    "conspirationist": "Conspiraționist",
+    "anti-populist": "Anti-populist",
+    "pro_european": "Pro-european",
+    "personalist_salvator": "Personalist-salvator",
 }
 
 
