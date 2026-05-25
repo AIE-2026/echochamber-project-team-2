@@ -199,8 +199,7 @@ def build_graph(active_slugs):
 
     route_map = {slug: slug for slug in active_slugs}
     route_map["__end__"] = END
-    print("BUILD_GRAPH CU AGENTI:", active_slugs)
-    print("ROUTE_MAP:", route_map)
+
 
     workflow.add_conditional_edges(
         "router",
