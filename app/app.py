@@ -287,7 +287,7 @@ with gr.Blocks(title="EchoChamber Studio", theme=gr.themes.Soft()) as demo:
     # EchoChamber Studio
     **Simulare a bulelor discursive folosind comentarii politice**
     
-    *Aplicație prototip pentru cercetare și educație. Agenții sunt roluri simulate, nu persoane reale.*
+    *Aplicație prototip cu scopuri educationale si de cercetare. Agenții sunt roluri simulate, nu persoane reale.*
     """)
 
     # ─────────────────────────────────────────────────────────────────────
