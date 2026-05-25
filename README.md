@@ -54,14 +54,17 @@ echochamber/
 
 ## Setup | How to run locally
 
-```bash
+### Windows PowerShell
+
 git clone <your-repo-url>
 cd echochamber
 python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+.venv\Scripts\Activate
 pip install -r requirements.txt
-cp .env.example .env        # then add your API key
-```
+cp .env.example .env
+python -m app.app
+
+The application runs locally by default at http://127.0.0.1:7860
 
 ### Environment variables
 
@@ -69,34 +72,44 @@ Create a local .env file based on .env.example.
 
 Do not commit .env or API keys. API keys and sensitive data must never be committed.
 
----
+#### Gemini (free tier available)
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-2.5-flash-lite
 
-## Application features
-    Chat – ask the selected model a direct question about the loaded or manually provided article
+#### DeepSeek (higher free quota)
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+DEEPSEEK_MODEL=deepseek-chat
 
-    Summarize article – generate a short summary of the loaded article
 
-    Agent – generate one response from a selected simulated agent
+## Technical Components
 
-    All agents – run all available agents on the same input and compare their responses
+| Component | Path | Description |
+|-----------|------|-------------|
+| Retriever | `core/retriever.py` | Searches FAISS vectorstore for relevant comments |
+| Agent | `core/agent.py` | Combines role, retrieved context and LLM response |
+| Graph | `core/graph.py` | Coordinates multi-agent conversation flow |
+| Metrics | `core/metrics.py` | Dissimilarity, sentiment, and visualization tools |
+| App | `app/app.py` | Exposes the system through a Gradio interface |
 
-    Debate – run a short multi-agent conversation between selected agents
+The retrieval component uses FAISS vector indexes stored under `assets/vectorstores/`. These indexes are used to retrieve similar comments for each agent and provide discursive context to the language model.
+
+## Application Features
+ #### Chat simplu
+ 	Ask the selected model a direct question
+#### Agent RAG	
+  Generate one response from a selected simulated agent
+#### Multi-agent thread	
+  Run a short multi-agent conversation between selected agents
   
   ### Workflow explanation
 
-    The input text is the central object of analysis.
-
-    Retrieved comments provide contextual discourse, not factual validation.
-
-    Agent roles define tone, perspective, and response constraints.
-
-    Each agent starts from a discursive role defined in YAML.
-
-    The retriever and RAG context remain the factual basis of the intervention.
-
-    Previous messages are kept in state and become part of the context.
-
-    The router decides when the thread continues and when the graph stops.
+    - The input text is the central object of analysis.
+    - Retrieved comments provide contextual discourse, not factual validation.
+    - Agent roles define tone, perspective, and response constraints.
+    - Each agent starts from a discursive role defined in YAML.
+    - The retriever and RAG context remain the factual basis of the intervention.
+    - Previous messages are kept in state and become part of the context.
+    - The router decides when the thread continues and when the graph stops.
 
 
 ## Agents
