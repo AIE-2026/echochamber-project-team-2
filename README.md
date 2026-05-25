@@ -56,15 +56,15 @@ echochamber/
 
 ### Windows PowerShell
 
-git clone <your-repo-url>
-cd echochamber
-python -m venv .venv
-.venv\Scripts\Activate
-pip install -r requirements.txt
-cp .env.example .env
-python -m app.app
+    git clone <your-repo-url>
+    cd echochamber
+    python -m venv .venv
+    .venv\Scripts\Activate
+    pip install -r requirements.txt
+    cp .env.example .env
+    python -m app.app
 
-The application runs locally by default at http://127.0.0.1:7860
+The application runs locally by default at http://127.0.0.1:7869
 
 ### Environment variables
 
@@ -94,11 +94,11 @@ DEEPSEEK_MODEL=deepseek-chat
 The retrieval component uses FAISS vector indexes stored under `assets/vectorstores/`. These indexes are used to retrieve similar comments for each agent and provide discursive context to the language model.
 
 ## Application Features
- #### Chat simplu
+  #### Chat simplu
  	Ask the selected model a direct question
-#### Agent RAG	
+  #### Agent RAG	
   Generate one response from a selected simulated agent
-#### Multi-agent thread	
+  #### Multi-agent thread	
   Run a short multi-agent conversation between selected agents
   
   ### Workflow explanation
