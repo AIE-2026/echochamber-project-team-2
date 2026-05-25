@@ -129,6 +129,19 @@ def load_agent_choices():
     roles = data["agents"] if "agents" in data else data
     return list(roles.keys())
 
+def load_agent_info():
+    """Load full agent information from roles.yaml"""
+    roles_path = PROJECT_ROOT / "assets" / "roles" / "roles.yaml"
+
+    if not roles_path.exists():
+        return {}
+
+    with open(roles_path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+
+    roles = data["agents"] if "agents" in data else data
+    return roles
+
 # ─────────────────────────────────────────────────────────────────────────────
 # 5. RAG AGENT FUNCTION
 # ─────────────────────────────────────────────────────────────────────────────
@@ -158,18 +171,26 @@ def rag_agent_response(agent_slug, stimulus, provider, k):
 # 6. DISPLAY FUNCTION
 # ─────────────────────────────────────────────────────────────────────────────
 
-def render_thread_html(messages):
+def render_thread_html(messages, agent_info):
     cards = []
 
     for msg in messages:
         agent = html.escape(str(msg.get("agent", "")))
+        slug = str(msg.get("slug", ""))
         handle = html.escape(str(msg.get("handle", msg.get("slug", ""))))
         text = html.escape(str(msg.get("text", "")))
         turn = msg.get("turn", "")
 
+        # Get agent color and emoji from agent_info if available
+        color = "#e05a35"
+        emoji = ""
+        if slug in agent_info:
+            color = agent_info[slug].get("color", "#e05a35")
+            emoji = agent_info[slug].get("emoji", "")
+
         cards.append(f"""
         <div style='
-            border-left:3px solid #e05a35;
+            border-left:3px solid {color};
             padding:.7rem 1rem;
             margin:.5rem 0;
             background:#f5f0e8;
@@ -177,11 +198,11 @@ def render_thread_html(messages):
         '>
             <div style='
                 font-size:.75rem;
-                color:#e05a35;
+                color:{color};
                 text-transform:uppercase;
                 font-weight:600;
             '>
-                {agent}
+                {emoji} {agent}
             </div>
             <div style='
                 font-size:.7rem;
@@ -208,7 +229,7 @@ def render_thread_html(messages):
 def run_multi_agent_thread(stimulus, provider, total_turns, 
                            use_anti_sistem, use_conspirationist, 
                            use_personalist_salvator, use_pro_european, 
-                           use_anti_suveranist):
+                           use_anti_populist):
     
     active_slugs = []
 
@@ -220,8 +241,8 @@ def run_multi_agent_thread(stimulus, provider, total_turns,
         active_slugs.append("personalist_salvator")
     if use_pro_european:
         active_slugs.append("pro_european")
-    if use_anti_suveranist:
-        active_slugs.append("anti_suveranist")
+    if use_anti_populist:
+        active_slugs.append("anti_populist")
 
     if not stimulus.strip():
         return "Scrie un text politic mai întâi."
@@ -237,7 +258,8 @@ def run_multi_agent_thread(stimulus, provider, total_turns,
             provider=provider,
             k=3,
         )
-        return render_thread_html(messages)
+        agent_info = load_agent_info()
+        return render_thread_html(messages, agent_info)
 
     except Exception as e:
         return f"[Eroare Multi-agent Thread: {type(e).__name__} — {e}]"
@@ -247,6 +269,17 @@ def run_multi_agent_thread(stimulus, provider, total_turns,
 # ─────────────────────────────────────────────────────────────────────────────
 
 agent_choices = load_agent_choices()
+agent_info = load_agent_info()
+
+# Create agent labels with emoji for dropdown
+agent_labels = []
+for slug in agent_choices:
+    if slug in agent_info:
+        emoji = agent_info[slug].get("emoji", "")
+        name = agent_info[slug].get("name", slug)
+        agent_labels.append(f"{emoji} {name}")
+    else:
+        agent_labels.append(slug)
 
 with gr.Blocks(title="EchoChamber Studio", theme=gr.themes.Soft()) as demo:
 
@@ -374,11 +407,18 @@ with gr.Blocks(title="EchoChamber Studio", theme=gr.themes.Soft()) as demo:
 
         gr.Markdown("### Selectează agenții participanți")
 
-        use_anti_sistem = gr.Checkbox(value=True, label="Anti-sistem")
-        use_conspirationist = gr.Checkbox(value=True, label="Conspiraționist")
-        use_personalist_salvator = gr.Checkbox(value=True, label="Personalist-salvator")
-        use_pro_european = gr.Checkbox(value=True, label="Pro-european")
-        use_anti_suveranist = gr.Checkbox(value=True, label="Anti-suveranist")
+        # Get agent display names with emoji from YAML
+        anti_sistem_label = f"{agent_info.get('anti_sistem', {}).get('emoji', '')} Anti-sistem ({agent_info.get('anti_sistem', {}).get('name', '@ImpotrivaSistemului')})"
+        conspirationist_label = f"{agent_info.get('conspirationist', {}).get('emoji', '')} Conspiraționist ({agent_info.get('conspirationist', {}).get('name', 'Conspiraționist')})"
+        personalist_label = f"{agent_info.get('personalist_salvator', {}).get('emoji', '')} Personalist-salvator ({agent_info.get('personalist_salvator', {}).get('name', 'Personalist-salvator')})"
+        pro_european_label = f"{agent_info.get('pro_european', {}).get('emoji', '')} Pro-european ({agent_info.get('pro_european', {}).get('name', 'Pro-european')})"
+        anti_populist_label = f"{agent_info.get('anti_populist', {}).get('emoji', '')} Anti-populist ({agent_info.get('anti_populist', {}).get('name', 'Anti-populist')})"
+
+        use_anti_sistem = gr.Checkbox(value=True, label=anti_sistem_label)
+        use_conspirationist = gr.Checkbox(value=True, label=conspirationist_label)
+        use_personalist_salvator = gr.Checkbox(value=True, label=personalist_label)
+        use_pro_european = gr.Checkbox(value=True, label=pro_european_label)
+        use_anti_populist = gr.Checkbox(value=True, label=anti_populist_label)
 
         thread_button = gr.Button("Pornește dezbaterea", variant="primary")
         thread_output = gr.HTML(label="Conversație generată")
@@ -393,7 +433,7 @@ with gr.Blocks(title="EchoChamber Studio", theme=gr.themes.Soft()) as demo:
                 use_conspirationist, 
                 use_personalist_salvator,
                 use_pro_european,
-                use_anti_suveranist
+                use_anti_populist
             ],
             outputs=thread_output
         )
@@ -406,11 +446,10 @@ with gr.Blocks(title="EchoChamber Studio", theme=gr.themes.Soft()) as demo:
     ---
     **Ethics & limitations**
     
-    EchoChamber este un prototip educațional și de cercetare. Agenții sunt roluri discursive simulate, 
+    EchoChamber este un prototip experimental-educațional și de cercetare. Agenții sunt roluri discursive simulate, 
     **nu** persoane reale sau reprezentanți ai unor grupuri sociale reale. Răspunsurile generate pot conține 
-    părtinire, exagerări sau afirmații neverificate și trebuie interpretate critic.
-    
-    Nu folosiți pentru persuasiune politică, profilare sau ca substitut pentru cercetarea socială empirică.
+    părtinire, exagerări sau afirmații incorecte și trebuie interpretate ca atare.
+
     """)
 
 # ─────────────────────────────────────────────────────────────────────────────
