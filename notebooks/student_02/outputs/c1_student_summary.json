@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-05-23T11:55:07.999531",
+  "model": "gemini-2.5-flash-lite",
+  "temperature": 0.2,
+  "max_tokens": 120,
+  "task": "student_neutral_summary",
+  "input_text": "\nTODO: Preşedintele SUA Donald Trump şi-a reafirmat într-un mod inedit interesul faţă de Groenlanda, \nprintr-o imagine postată pe reţeaua sa, Truth Social, după ce, miercuri, trimisul special al Statelor Unite în Groenlanda, \na declarat pentru AFP că Statele Unite trebuie să-şi consolideze prezenţa pe acest teritoriu autonom danez, \niar joi groenlandezii au organizat un protest la adresa lui Trump în timp ce diplomaţii americani inaugurau un nou consulat.\n",
+  "output_text": "Trump și-a reafirmat interesul față de Groenlanda printr-o postare, în timp ce SUA își consolidează prezența, iar groenlandezii protestează."
+}

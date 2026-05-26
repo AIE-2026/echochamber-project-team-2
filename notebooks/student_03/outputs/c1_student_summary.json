@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-05-02T13:38:12.703057",
+  "model": "gemini-2.5-flash-lite",
+  "temperature": 0.2,
+  "max_tokens": 120,
+  "task": "student_neutral_summary",
+  "input_text": "\nUn nou Plan naţional de paturi, valabil în perioada 2026–2028, a fost aprobat astăzi, prin Hotărâre de Guvern.\nPlanul prevede optimizarea numărului de paturi pentru spitalizare continuă finanţate de casele de asigurări de sănătate.\nPotrivit noilor reglementări, se pune accent pe dezvoltarea serviciilor medicale alternative, mai accesibile şi eficiente pentru pacienţi, precum spitalizare de zi şi ambulatoriu.\nPentru perioada 2026–2028, este prevăzută reducerea etapizată pentru aproximativ 14.000 de paturi, fără a afecta accesul populaţiei la servicii medicale.\n",
+  "output_text": "Guvernul a aprobat un nou Plan național de paturi pentru 2026-2028, vizând optimizarea numărului de paturi pentru spitalizare continuă. Se pune accent pe dezvoltarea serviciilor medicale alternative, precum spitalizarea de zi și ambulatoriul. Planul prevede reducerea etapizată a aproximativ 14.000 de paturi, fără a afecta accesul pacienților la servicii medicale."
+}
